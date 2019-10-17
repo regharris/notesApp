@@ -1,13 +1,12 @@
-
 ////////////////////////////////
 ///////  road to hire      ////
 //////   take notes!      ////
 /////////////////////////////
 
-require('dotenv').config()
+require("dotenv").config();
 const express = require("express");
-const MongoClient = require("mongodb").MongoClient
-const ObjectId = require('mongodb').ObjectId;
+const MongoClient = require("mongodb").MongoClient;
+const ObjectId = require("mongodb").ObjectId;
 const logger = require("morgan");
 const path = require("path");
 
@@ -26,26 +25,26 @@ app.use(express.static("public"));
 // Connect to Atlas in production
 if (process.env.NODE_ENV === "production") {
   uri = process.env.ATLAS_URI;
-} else {  
+} else {
   // localhost
-  uri = process.env.LOCAL_URI  
+  uri = process.env.LOCAL_URI;
 }
 
 // database connection ppol
-let db = ""
-let dbName = "notetaker"
-MongoClient.connect(uri, { useNewUrlParser: true,                            
-                           useUnifiedTopology: true }, 
-    (err, client) => 
-      {
-        if (err) {    
-          console.log(err) 
-          return
-        }        
-      console.log("Connected successfully to server") 
-      db = client.db(dbName)   
-});
-
+let db = "";
+let dbName = "notetaker";
+MongoClient.connect(
+  process.env.ATLAS_URI,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  (err, client) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log("Connected successfully to server");
+    db = client.db(dbName);
+  }
+);
 
 ////////////////////////
 ///   api end points //
@@ -57,9 +56,9 @@ app.get("/", (req, res) => {
 });
 
 // post a new note
-app.post("/submit", (req, res) => { 
-  const collection = db.collection('notes')
-  collection.insertOne(req.body, (error, data) => {   
+app.post("/submit", (req, res) => {
+  const collection = db.collection("notes");
+  collection.insertOne(req.body, (error, data) => {
     if (error) {
       res.send(error);
     } else {
@@ -71,19 +70,19 @@ app.post("/submit", (req, res) => {
 // retrieve every document in the collection
 // note the .toArray() function to unpack the objects
 app.get("/all", (req, res) => {
-  const collection = db.collection('notes')
-  collection.find({}).toArray((error, data) => {    
+  const collection = db.collection("notes");
+  collection.find({}).toArray((error, data) => {
     if (error) {
       res.send(error);
     } else {
       res.json(data);
     }
-  })
-})
+  });
+});
 
 // get a specific document based on objectid
 app.get("/find/:id", (req, res) => {
-  const collection = db.collection('notes')  
+  const collection = db.collection("notes");
   collection.findOne(
     {
       _id: ObjectId(req.params.id)
@@ -100,7 +99,7 @@ app.get("/find/:id", (req, res) => {
 
 //update a specific document identified by objectid
 app.post("/update/:id", (req, res) => {
-  const collection = db.collection('notes')
+  const collection = db.collection("notes");
   collection.updateOne(
     {
       _id: ObjectId(req.params.id)
@@ -124,7 +123,7 @@ app.post("/update/:id", (req, res) => {
 
 // delete one document identified by objectid
 app.delete("/delete/:id", (req, res) => {
-  const collection = db.collection('notes')
+  const collection = db.collection("notes");
   collection.deleteOne(
     {
       _id: ObjectId(req.params.id)
@@ -141,7 +140,7 @@ app.delete("/delete/:id", (req, res) => {
 
 // remove all documents from the collection
 app.delete("/clearall", (req, res) => {
-  const collection = db.collection('notes')
+  const collection = db.collection("notes");
   collection.deleteMany({}, (error, response) => {
     if (error) {
       res.send(error);
